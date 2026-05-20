@@ -1,0 +1,548 @@
+<!-- ==========================================================================
+     WORDLY × TEAMS — INTERACTIVE DEMO MODULE  (v14)
+     Paste this entire block into a single Webflow Embed component.
+     ========================================================================== -->
+
+<style>
+.wordly-demo {
+  --wd-blue: #017CFF;
+  --wd-blue-soft: #E6EEFF;
+  --wd-blue-dark: #015FCC;
+  --wd-green: #00D661;
+  --wd-meeting-bg: #1A1F2E;
+  --wd-meeting-bg-2: #232838;
+  --wd-panel: #FFFFFF;
+  --wd-bubble: #F1F1F2;
+  --wd-text: #1A1A1A;
+  --wd-text-muted: #6B6B70;
+  --wd-mic-active: #22C55E;
+  --wd-hangup: #E03A3A;
+  --wd-control-bg: #3a3f4d;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--wd-text);
+  position: relative;
+}
+.wordly-demo *, .wordly-demo *::before, .wordly-demo *::after { box-sizing: border-box; }
+
+.wordly-demo .wd-screen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 28%);
+  background: var(--wd-meeting-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  min-height: 380px;
+  position: relative;
+  min-width: 0;
+  box-shadow: 0 24px 48px -20px rgba(0,0,0,0.35), 0 12px 24px -16px rgba(0,0,0,0.22);
+}
+
+.wordly-demo .wd-teams {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at top, #232a3d 0%, var(--wd-meeting-bg) 60%);
+  user-select: none;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.wordly-demo .wd-teams-header {
+  padding: 14px 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.wordly-demo .wd-w-badge {
+  width: 32px; height: 32px;
+  border-radius: 7px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wordly-demo .wd-w-badge img { width: 100%; height: 100%; display: block; }
+
+.wordly-demo .wd-pause-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #fff;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  padding: 0;
+}
+.wordly-demo .wd-pause-btn:hover { background: rgba(255,255,255,0.18); }
+.wordly-demo .wd-pause-btn svg { width: 11px; height: 11px; fill: #fff; }
+
+.wordly-demo .wd-tiles {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  padding: 18px 24px 12px;
+  align-content: center;
+  min-height: 0;
+}
+
+.wordly-demo .wd-tile {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  transition: box-shadow 0.35s, transform 0.35s;
+  background: #2a2a2a;
+}
+
+.wordly-demo .wd-tile::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 38%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.55));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wordly-demo .wd-tile.aliyah { grid-column: 1 / 3; max-width: 60%; justify-self: center; }
+.wordly-demo .wd-tile.harjot { grid-column: 1; justify-self: end; max-width: 92%; }
+.wordly-demo .wd-tile.miko   { grid-column: 2; justify-self: start; max-width: 92%; }
+
+.wordly-demo .wd-tile-fill { position: absolute; inset: 0; z-index: 0; }
+.wordly-demo .wd-tile.aliyah .wd-tile-fill { background: linear-gradient(135deg, #d4a373 0%, #6b4a30 100%); }
+.wordly-demo .wd-tile.harjot .wd-tile-fill { background: linear-gradient(135deg, #c8553d 0%, #5e2618 100%); }
+.wordly-demo .wd-tile.miko   .wd-tile-fill { background: linear-gradient(135deg, #6b8aa3 0%, #2f4253 100%); }
+
+.wordly-demo .wd-avatar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  height: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: clamp(20px, 2.6vw, 38px);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+.wordly-demo .wd-name-pill {
+  position: absolute;
+  bottom: 8px; left: 8px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px 4px 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 3;
+}
+
+.wordly-demo .wd-mic-icon { width: 11px; height: 11px; position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wordly-demo .wd-mic-icon svg { width: 100%; height: 100%; }
+
+.wordly-demo .wd-tile.is-active { box-shadow: 0 0 0 2px var(--wd-blue), 0 0 24px rgba(1, 124, 255, 0.5); transform: scale(1.025); }
+.wordly-demo .wd-tile.is-active .wd-name-pill { background: var(--wd-blue); }
+
+.wordly-demo .wd-wave { display: none; align-items: flex-end; gap: 1.5px; height: 9px; margin-left: 2px; }
+.wordly-demo .wd-tile.is-active .wd-wave { display: inline-flex; }
+.wordly-demo .wd-tile.is-active .wd-mic-icon svg { display: none; }
+.wordly-demo .wd-wave-bar { width: 1.5px; background: #fff; border-radius: 1px; animation: wd-wave 0.8s ease-in-out infinite; }
+.wordly-demo .wd-wave-bar:nth-child(1) { animation-delay: 0s; }
+.wordly-demo .wd-wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.wordly-demo .wd-wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.wordly-demo .wd-wave-bar:nth-child(4) { animation-delay: 0.45s; }
+@keyframes wd-wave { 0%, 100% { height: 2px; } 50% { height: 9px; } }
+
+.wordly-demo .wd-controls { display: flex; justify-content: center; align-items: center; gap: 11px; padding: 8px 0 6px; flex-shrink: 0; }
+.wordly-demo .wd-ctrl { width: 36px; height: 36px; border-radius: 50%; background: var(--wd-control-bg); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+.wordly-demo .wd-ctrl svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; display: block; }
+.wordly-demo .wd-ctrl.muted { background: var(--wd-hangup); }
+.wordly-demo .wd-ctrl.hangup { background: var(--wd-hangup); }
+.wordly-demo .wd-ctrl.hangup svg { transform: rotate(135deg); }
+
+.wordly-demo .wd-meeting-name { text-align: center; font-size: 11px; color: rgba(255,255,255,0.55); padding: 2px 0 12px; letter-spacing: 0.01em; flex-shrink: 0; }
+
+.wordly-demo .wd-panel { background: var(--wd-panel); display: flex; flex-direction: column; border-left: 1px solid #ddd; min-width: 0; min-height: 0; overflow: hidden; }
+.wordly-demo .wd-panel-header { padding: 18px 16px 14px; border-bottom: 1px solid #eee; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wordly-demo .wd-wordly-logo { width: 100%; max-width: 110px; height: auto; display: block; }
+.wordly-demo .wd-wordly-sub { font-size: 10px; font-weight: 600; color: #353535; letter-spacing: 0.02em; }
+
+.wordly-demo .wd-lang-wrap { position: relative; margin: 22px 14px 10px; flex-shrink: 0; }
+.wordly-demo .wd-lang-select { width: 100%; padding: 8px 30px 8px 11px; font-size: 12.5px; font-family: inherit; color: var(--wd-text); background: #fff; border: 1px solid #d8d8db; border-radius: 4px; appearance: none; -webkit-appearance: none; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+.wordly-demo .wd-lang-select:focus, .wordly-demo .wd-lang-select:hover { border-color: var(--wd-blue); outline: none; box-shadow: 0 0 0 3px rgba(1, 124, 255, 0.12); }
+.wordly-demo .wd-lang-wrap::after { content: ""; position: absolute; right: 10px; top: 50%; width: 7px; height: 7px; border-right: 1.5px solid #888; border-bottom: 1.5px solid #888; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.wordly-demo .wd-lang-select option[value="more"] { font-weight: 600; color: var(--wd-blue); font-style: italic; }
+
+.wordly-demo .wd-lang-hint { position: absolute; top: -18px; left: 0; font-size: 10px; color: var(--wd-blue); font-weight: 500; display: flex; align-items: center; gap: 3px; animation: wd-hint-bob 1.6s ease-in-out infinite; pointer-events: none; }
+.wordly-demo .wd-lang-hint.hidden { display: none; }
+@keyframes wd-hint-bob { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-2px); opacity: 0.7; } }
+
+
+.wordly-demo .wd-feed { flex: 1; overflow-y: auto; padding: 12px 14px 16px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; min-height: 0; }
+.wordly-demo .wd-feed::-webkit-scrollbar { width: 4px; }
+.wordly-demo .wd-feed::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+.wordly-demo .wd-speaker-group { display: flex; flex-direction: column; gap: 5px; }
+.wordly-demo .wd-speaker-name { font-size: 11.5px; font-weight: 600; color: var(--wd-text); margin-top: 4px; }
+.wordly-demo .wd-bubble { background: var(--wd-bubble); color: var(--wd-text); font-size: 12px; line-height: 1.45; padding: 8px 11px; border-radius: 11px; max-width: 100%; word-wrap: break-word; animation: wd-bubble-in 0.3s ease-out; }
+.wordly-demo .wd-bubble.is-typing { background: #e8efff; }
+.wordly-demo .wd-bubble.is-typing::after { content: ""; display: inline-block; width: 5px; height: 11px; background: var(--wd-blue); vertical-align: text-bottom; margin-left: 2px; animation: wd-cursor 0.7s steps(2) infinite; }
+@keyframes wd-cursor { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+@keyframes wd-bubble-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.wordly-demo .wd-paused-veil { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: center; justify-content: center; z-index: 5; pointer-events: none; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.wordly-demo.is-paused .wd-paused-veil { display: flex; }
+.wordly-demo .wd-paused-pill { background: rgba(255,255,255,0.95); color: #1a1a1a; padding: 7px 14px; border-radius: 999px; font-size: 11.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+
+
+
+@media (max-width: 540px) {
+  .wordly-demo { padding: 12px; }
+  .wordly-demo .wd-screen { grid-template-columns: 1fr; grid-template-rows: auto auto; aspect-ratio: auto; height: auto; min-height: 0; }
+  .wordly-demo .wd-teams { aspect-ratio: 16 / 10; }
+  .wordly-demo .wd-panel { border-left: none; border-top: 1px solid #ddd; height: 300px; max-height: 300px; }
+  .wordly-demo .wd-tiles { padding: 12px 16px 8px; gap: 8px; }
+  .wordly-demo .wd-tile.aliyah { max-width: 68%; }
+  .wordly-demo .wd-controls { gap: 8px; padding: 4px 0 4px; }
+  .wordly-demo .wd-meeting-name { font-size: 9px; padding-bottom: 6px; }
+  .wordly-demo .wd-paused-veil { inset: 0; }
+}
+</style>
+
+<div class="wordly-demo" id="wordlyDemo">
+  <div class="wd-screen">
+
+    <div class="wd-teams" id="wdTeamsClick">
+      <div class="wd-teams-header">
+        <div class="wd-w-badge" aria-label="Wordly"><img src="https://cdn.prod.website-files.com/61707b4f874fa22b7482b07e/6987cc6972b7f6494986a8f4_Wordly%20256x256.svg" alt="Wordly" /></div>
+        <button class="wd-pause-btn" id="wdPauseBtn" aria-label="Pause">
+          <svg viewBox="0 0 12 12" id="wdPauseIcon"><rect x="3" y="2" width="2" height="8" fill="currentColor"/><rect x="7" y="2" width="2" height="8" fill="currentColor"/></svg>
+        </button>
+      </div>
+
+      <div class="wd-tiles">
+        <div class="wd-tile aliyah" data-speaker="aliyah">
+          <div class="wd-tile-fill"></div>
+          <div class="wd-avatar">A</div>
+          <div class="wd-name-pill">
+            <span class="wd-mic-icon">
+              <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="1.5" width="4" height="7" rx="2"/><path d="M3 7v0.5a4 4 0 0 0 8 0V7"/><line x1="7" y1="11" x2="7" y2="13"/></svg>
+              <span class="wd-wave"><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span></span>
+            </span>
+            Aliyah
+          </div>
+        </div>
+        <div class="wd-tile harjot" data-speaker="harjot">
+          <div class="wd-tile-fill"></div>
+          <div class="wd-avatar">H</div>
+          <div class="wd-name-pill">
+            <span class="wd-mic-icon">
+              <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="1.5" width="4" height="7" rx="2"/><path d="M3 7v0.5a4 4 0 0 0 8 0V7"/><line x1="7" y1="11" x2="7" y2="13"/></svg>
+              <span class="wd-wave"><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span></span>
+            </span>
+            Harjot
+          </div>
+        </div>
+        <div class="wd-tile miko" data-speaker="miko">
+          <div class="wd-tile-fill"></div>
+          <div class="wd-avatar">M</div>
+          <div class="wd-name-pill">
+            <span class="wd-mic-icon">
+              <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="1.5" width="4" height="7" rx="2"/><path d="M3 7v0.5a4 4 0 0 0 8 0V7"/><line x1="7" y1="11" x2="7" y2="13"/></svg>
+              <span class="wd-wave"><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span><span class="wd-wave-bar"></span></span>
+            </span>
+            Miko
+          </div>
+        </div>
+      </div>
+
+      <div class="wd-controls">
+        <div class="wd-ctrl muted" title="Microphone muted"><svg viewBox="0 0 24 24"><line x1="3" y1="3" x2="21" y2="21"/><path d="M9 5a3 3 0 0 1 6 0v5"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M19 11v1a7 7 0 0 1-.11 1.23"/><path d="M5 11v1a7 7 0 0 0 12 5"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div>
+        <div class="wd-ctrl" title="Camera"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+        <div class="wd-ctrl" title="Speaker"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+        <div class="wd-ctrl" title="Share screen"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="wd-ctrl" title="Participants"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="wd-ctrl hangup" title="End call"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      </div>
+      <div class="wd-meeting-name">Microsoft Teams Meeting</div>
+
+      <div class="wd-paused-veil">
+        <span class="wd-paused-pill">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2 L10 6 L3 10 Z"/></svg>
+          Click anywhere to resume
+        </span>
+      </div>
+    </div>
+
+    <div class="wd-panel">
+      <div class="wd-panel-header">
+        <img class="wd-wordly-logo" alt="Wordly" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDggMzMiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik0zNS4xMTA3IDUuMDM4NjRMMzYuMzM3OSAwLjM2NDQ3OUgzNC4xOTM0QzMwLjg1OTUgMC4zNjQ0NzkgMjcuOTQwMyAyLjYxNzc5IDI3LjA5NDIgNS44NDI4TDI0LjQzMDUgMTYuMDI4OEwyMC41MzUzIDAuMzYwMjkxSDE1LjcxMDRMMTEuODM2MiAxNS45NjZMOS4xODQ5OCA1Ljg0MjhDOC4zNDMxMyAyLjYxNzc5IDUuNDIzODcgMC4zNjQ0NzkgMi4wODk5NyAwLjM2NDQ3OUgwTDEuMjI3MTggNS4wMzg2NEgyLjA4OTk3QzMuMzAwNCA1LjAzODY0IDQuMzYwMDQgNS44NTUzNyA0LjY2NTc5IDcuMDI4MUw4Ljc3ODcyIDIyLjgzMDZIMTQuMjA2OEwxOC4xMjcgNy43NTI2N0wyMi4wNDczIDIyLjgzMDZIMjcuNDc1NEwzMS42MTc2IDcuMDI4MUMzMS45MjM0IDUuODU5NTUgMzIuOTgzIDUuMDM4NjQgMzQuMTkzNCA1LjAzODY0SDM1LjExMDdaIiBmaWxsPSIjMDE3Q0ZGIi8+PHBhdGggZD0iTTUyLjUyNTQgMTMuNzEyNVYyMi44MjYzSDU3LjE5OTZWMTMuNzEyNUM1Ny4xOTk2IDEyLjA1ODEgNTguNTQ4MiAxMC43MDk1IDYwLjIwMjYgMTAuNzA5NUg2Mi4zMjE5TDYzLjU0NDkgNi4wMzUzNEg2MC4yMDI2QzU1Ljk2ODIgNi4wMzUzNCA1Mi41MjU0IDkuNDc4MTQgNTIuNTI1NCAxMy43MTI1WiIgZmlsbD0iIzAxN0NGRiIvPjxwYXRoIGQ9Ik00Ni4xMDAzIDcuMTE1MDdDNDQuNzcyNiA2LjM2OTU1IDQzLjI5NDIgNi4wMDA5OCA0MS42NjkxIDYuMDAwOThDNDAuMDQ0IDYuMDAwOTggMzguNTU3MiA2LjM3Mzc0IDM3LjIyMTEgNy4xMTUwN0MzNS44ODUgNy44NjA1OSAzNC44MTcgOC44NzQxNiAzNC4wMjU0IDEwLjE2QzMzLjIyOTYgMTEuNDQ1OCAzMi44MzU5IDEyLjkyNDMgMzIuODM1OSAxNC41OTEyQzMyLjgzNTkgMTYuMjU4MiAzMy4yMzM4IDE3LjcxMTUgMzQuMDI1NCAxOS4wMDk5QzM0LjgyMTIgMjAuMzA4MyAzNS44ODUgMjEuMzI2IDM3LjIyMTEgMjIuMDcxNkMzOC41NTcyIDIyLjgxNzEgNDAuMDM5OCAyMy4xODU3IDQxLjY2OTEgMjMuMTg1N0M0My4yOTg0IDIzLjE4NTcgNDQuNzc2OCAyMi44MTI5IDQ2LjEwMDMgMjIuMDcxNkM0Ny40MjggMjEuMzI2IDQ4LjQ4NzcgMjAuMzA4MyA0OS4yODM1IDE5LjAwOTlDNTAuMDc5MyAxNy43MTE1IDUwLjQ3MyAxNi4yNDE0IDUwLjQ3MyAxNC41OTEyQzUwLjQ3MyAxMi45NDEgNTAuMDc1MSAxMS40NDU4IDQ5LjI4MzUgMTAuMTZDNDguNDg3NyA4Ljg3NDE2IDQ3LjQyOCA3Ljg1NjQgNDYuMTAwMyA3LjExNTA3Wk00NS4yNzExIDE2Ljk0NTFDNDQuOTE5MiAxNy42Mjc4IDQ0LjQzNzYgMTguMTU5NyA0My44MjE5IDE4LjU0NUM0My4yMTA0IDE4LjkyNjEgNDIuNDkgMTkuMTE4OCA0MS42NjQ5IDE5LjExODhDNDAuODM5OCAxOS4xMTg4IDQwLjExNTIgMTguOTI2MSAzOS40OTU0IDE4LjU0NUMzOC44NzEzIDE4LjE2MzkgMzguMzg1NSAxNy42MzE5IDM4LjAzMzYgMTYuOTQ1MUMzNy42ODE4IDE2LjI2MjQgMzcuNTA1OSAxNS40NzkxIDM3LjUwNTkgMTQuNTkxMkMzNy41MDU5IDEzLjcwMzMgMzcuNjgxOCAxMi45Mjg1IDM4LjAzMzYgMTIuMjU0MUMzOC4zODU1IDExLjU3OTggMzguODcxMyAxMS4wNDc5IDM5LjQ5NTQgMTAuNjU0MkM0MC4xMTk0IDEwLjI2MDUgNDAuODM5OCAxMC4wNjc4IDQxLjY2NDkgMTAuMDY3OEM0Mi40OSAxMC4wNjc4IDQzLjIwNjIgMTAuMjY0NyA0My44MjE5IDEwLjY1NDJDNDQuNDMzNCAxMS4wNDc5IDQ0LjkxOTIgMTEuNTc5OCA0NS4yNzExIDEyLjI1NDFDNDUuNjIyOSAxMi45Mjg1IDQ1Ljc5ODggMTMuNzA3NSA0NS43OTg4IDE0LjU5MTJDNDUuNzk4OCAxNS40NzUgNDUuNjIyOSAxNi4yNjI0IDQ1LjI3MTEgMTYuOTQ1MVoiIGZpbGw9IiMwMTdDRkYiLz48cGF0aCBkPSJNNzYuODA1MyA3Ljc2NTE1Qzc2LjM3MzkgNy4zMzM3NSA3NS44NzEzIDYuOTY1MTggNzUuMjgwOCA2LjY4MDM3Qzc0LjM0NjggNi4yMjgwMyA3My4yNzQ2IDYuMDAxODYgNzIuMDY4MyA2LjAwMTg2QzcwLjUwMTkgNi4wMDE4NiA2OS4wODIxIDYuMzgzIDY3LjgxNzIgNy4xNDk0NkM2Ni41NTIzIDcuOTExNzQgNjUuNTQ3MSA4Ljk0MjA2IDY0LjgwMTYgMTAuMjQwNEM2NC4wNTYxIDExLjUzODggNjMuNjg3NSAxMi45ODggNjMuNjg3NSAxNC41OTYzQzYzLjY4NzUgMTYuMjA0NiA2NC4wNTYxIDE3LjYzMjggNjQuNzg5IDE4LjkzOTZDNjUuNTIyIDIwLjI0NjMgNjYuNTIzIDIxLjI4MDkgNjcuNzg3OSAyMi4wNDczQzY5LjA1MjcgMjIuODA5NiA3MC40OTM1IDIzLjE5NDkgNzIuMTAxOCAyMy4xOTQ5QzczLjIyODUgMjMuMTk0OSA3NC4yNzE0IDIyLjk4OTcgNzUuMjM4OSAyMi41NzVDNzUuOTgwMiAyMi4yNTY3IDc2LjYwNDMgMjEuODIxMSA3Ny4xMDY5IDIxLjI3MjVWMjIuODM0N0g4MS4zMjg3VjBINzYuODA1M1Y3Ljc2NTE1Wk03Ni4yNzM0IDE2Ljk0NTlDNzUuOTIxNiAxNy42Mjg2IDc1LjQzNTcgMTguMTYwNiA3NC44MTE3IDE4LjU0NTlDNzQuMTg3NiAxOC45MjcgNzMuNDYzIDE5LjExOTcgNzIuNjQyMSAxOS4xMTk3QzcxLjgyMTIgMTkuMTE5NyA3MS4wNzk5IDE4LjkyNyA3MC40MjY1IDE4LjU0NTlDNjkuNzczMSAxOC4xNjQ3IDY5LjI2NjMgMTcuNjMyOCA2OC45MDIgMTYuOTQ1OUM2OC41NDE4IDE2LjI2MzIgNjguMzU3NSAxNS40OCA2OC4zNTc1IDE0LjU5MjFDNjguMzU3NSAxMy43MDQyIDY4LjUzNzYgMTIuOTI5MyA2OC45MDIgMTIuMjU1QzY5LjI2MjIgMTEuNTgwNyA2OS43NzMxIDExLjA0ODggNzAuNDI2NSAxMC42NTUxQzcxLjA3OTkgMTAuMjYxNCA3MS44MTcgMTAuMDY4NyA3Mi42NDIxIDEwLjA2ODdDNzMuNDY3MiAxMC4wNjg3IDc0LjE5MTggMTAuMjYxNCA3NC44MTE3IDEwLjY0MjVDNzUuNDM1NyAxMS4wMjM3IDc1LjkyMTYgMTEuNTU1NiA3Ni4yNzM0IDEyLjI0MjVDNzYuNjI1MiAxMi45MjUyIDc2LjgwMTEgMTMuNzA4NCA3Ni44MDExIDE0LjU5NjNDNzYuODAxMSAxNS40ODQyIDc2LjYyNTIgMTYuMjY3NCA3Ni4yNzM0IDE2Ljk1MDFWMTYuOTQ1OVoiIGZpbGw9IiMwMTdDRkYiLz48cGF0aCBkPSJNODguNTIxNCAwSDgzLjk5OFYyMi44MjYzSDg4LjUyMTRWMFoiIGZpbGw9IiMwMTdDRkYiLz48cGF0aCBkPSJNMTA4LjAwMyA2LjM2MTMzSDEwMy4xNDhMOTkuOTYxMSAxNS4wMzk1Qzk5LjcwMTQgMTUuNjMwMSA5OS40NTQzIDE2LjIyNDggOTkuMjExNCAxNi44MjM3TDk1LjM3MDcgNi4zNjEzM0g5MC41MTY0TDk2Ljk3NDggMjIuNzQ2Qzk2LjQ4NDggMjQuMDgyMSA5NS44OTg0IDI1LjQ4MSA5NS4xNzggMjYuMjE0QzkzLjI0MyAyOC42OTc2IDg4LjY0IDI4LjU2NzggODguNTM5NSAyNC45MTE0SDg0LjAzNzFDODMuOTUzMyAyOC4zNjY4IDg2LjYxMjkgMzEuNTI4OSA4OS45OTcxIDMyLjE0NDZDOTQuODI2MiAzMy4xNzkxIDk5LjE0NDMgMjkuNjUyNiAxMDAuNTk0IDI1LjI5NjdMMTA4LjAwMyA2LjM2MTMzWiIgZmlsbD0iIzAxN0NGRiIvPjwvc3ZnPg==" />
+        <div class="wd-wordly-sub">AI Translation &amp; Captions</div>
+      </div>
+      <div class="wd-lang-wrap">
+        <select class="wd-lang-select" id="wdLangSelect" aria-label="Choose your language">
+          <option value="en">English (US)</option>
+          <option value="es">Español</option>
+          <option value="ja">Japanese (日本語)</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="pt">Português</option>
+          <option value="zh">Chinese (中文)</option>
+          <option value="ko">Korean (한국어)</option>
+          <option value="more">＋ &amp; dozens more →</option>
+        </select>
+        <span class="wd-lang-hint" id="wdLangHint">↓ Try changing the language</span>
+      </div>
+      <div class="wd-feed" id="wdFeed"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  var SCRIPT_LINES = [
+    { speaker: "aliyah", lines: {
+      en: "Hi Miko. We are excited to be showing you Wordly with Teams today.",
+      es: "Hola Miko. Estamos emocionados de mostrarte Wordly con Teams hoy.",
+      ja: "ミコさん、こんにちは。今日はWordlyとTeamsをご紹介できることを嬉しく思います。",
+      fr: "Salut Miko. Nous sommes ravis de vous presenter Wordly avec Teams aujourd hui.",
+      de: "Hallo Miko. Wir freuen uns, Ihnen heute Wordly mit Teams zu zeigen.",
+      pt: "Ola Miko. Estamos animados em mostrar o Wordly com Teams hoje.",
+      zh: "你好,Miko。今天我们很高兴向您展示Wordly与Teams的集成。",
+      ko: "안녕하세요 미코. 오늘 Wordly와 Teams를 보여드리게 되어 기쁩니다."
+    } },
+    { speaker: "aliyah", lines: {
+      en: "Just pick your preferred language from the menu.",
+      es: "Solo elige tu idioma preferido del menu.",
+      ja: "メニューからお好みの言語を選んでください。",
+      fr: "Choisissez simplement votre langue preferee dans le menu.",
+      de: "Wahlen Sie einfach Ihre bevorzugte Sprache aus dem Menu.",
+      pt: "Basta escolher seu idioma preferido no menu.",
+      zh: "只需从菜单中选择您喜欢的语言。",
+      ko: "메뉴에서 원하는 언어를 선택하기만 하면 됩니다."
+    } },
+    { speaker: "miko", lines: {
+      en: "Wow, so I can speak in my own language?",
+      es: "Vaya, asi que puedo hablar en mi propio idioma?",
+      ja: "すごい、自分の言語で話せるんですか?",
+      fr: "Wow, je peux donc parler dans ma propre langue?",
+      de: "Wow, ich kann also in meiner eigenen Sprache sprechen?",
+      pt: "Uau, entao posso falar no meu proprio idioma?",
+      zh: "哇,所以我可以用自己的语言说话?",
+      ko: "와, 그럼 제가 제 모국어로 말할 수 있나요?"
+    } },
+    { speaker: "miko", lines: {
+      en: "It will translate for you?",
+      es: "Traducira por ti?",
+      ja: "あなたのために翻訳してくれるんですか?",
+      fr: "Cela traduira pour vous?",
+      de: "Es ubersetzt fur Sie?",
+      pt: "Vai traduzir para voce?",
+      zh: "它会为您翻译?",
+      ko: "당신을 위해 번역해 주나요?"
+    } },
+    { speaker: "miko", lines: {
+      en: "And I will get translations too?",
+      es: "Y yo tambien recibire traducciones?",
+      ja: "私も翻訳をもらえるんですか?",
+      fr: "Et je recevrai aussi des traductions?",
+      de: "Und ich bekomme auch Ubersetzungen?",
+      pt: "E eu tambem receberei traducoes?",
+      zh: "我也会得到翻译吗?",
+      ko: "저도 번역을 받을 수 있나요?"
+    } },
+    { speaker: "harjot", lines: {
+      en: "Yes, that is right!",
+      es: "Si, asi es!",
+      ja: "はい、その通りです!",
+      fr: "Oui, c est ca!",
+      de: "Ja, genau!",
+      pt: "Sim, isso mesmo!",
+      zh: "是的,没错!",
+      ko: "네, 맞아요!"
+    } },
+    { speaker: "harjot", lines: {
+      en: "You can speak and follow along in Japanese and we can speak and follow along in English.",
+      es: "Tu puedes hablar y seguir la conversacion en japones y nosotros podemos hablar y seguir en ingles.",
+      ja: "あなたは日本語で話して聞いて、私たちは英語で話して聞くことができます。",
+      fr: "Vous pouvez parler et suivre en japonais et nous pouvons parler et suivre en anglais.",
+      de: "Sie konnen auf Japanisch sprechen und folgen, und wir konnen auf Englisch sprechen und folgen.",
+      pt: "Voce pode falar e acompanhar em japones e nos podemos falar e acompanhar em ingles.",
+      zh: "您可以用日语说话和跟读,而我们可以用英语说话和跟读。",
+      ko: "당신은 일본어로 말하고 따라갈 수 있고 저희는 영어로 말하고 따라갈 수 있습니다."
+    } }
+  ];
+
+  var SPEAKER_NAMES = { aliyah: "Aliyah", harjot: "Harjot", miko: "Miko" };
+
+  var root = document.getElementById("wordlyDemo");
+  var feed = document.getElementById("wdFeed");
+  var langSelect = document.getElementById("wdLangSelect");
+  var langHint = document.getElementById("wdLangHint");
+  var pauseBtn = document.getElementById("wdPauseBtn");
+  var teamsClickArea = document.getElementById("wdTeamsClick");
+  var tiles = root.querySelectorAll(".wd-tile");
+
+
+  var currentLang = "en";
+  var lineIdx = 0;
+  var charIdx = 0;
+  var displayedBubbles = [];
+  var isPaused = false;
+  var timer = null;
+
+  function clearFeed() { feed.innerHTML = ""; displayedBubbles = []; }
+  function setActiveSpeaker(s) { tiles.forEach(function(t) { t.classList.toggle("is-active", t.dataset.speaker === s); }); }
+  function clearActiveSpeaker() { tiles.forEach(function(t) { t.classList.remove("is-active"); }); }
+
+  function startBubble(idx) {
+    var line = SCRIPT_LINES[idx];
+    var prev = displayedBubbles[displayedBubbles.length - 1];
+    var sameSpeaker = prev && SCRIPT_LINES[prev.lineIdx].speaker === line.speaker;
+    var group;
+    if (sameSpeaker) {
+      group = prev.groupEl;
+    } else {
+      group = document.createElement("div");
+      group.className = "wd-speaker-group";
+      var nameEl = document.createElement("div");
+      nameEl.className = "wd-speaker-name";
+      nameEl.textContent = SPEAKER_NAMES[line.speaker];
+      group.appendChild(nameEl);
+      feed.appendChild(group);
+    }
+    var bubbleEl = document.createElement("div");
+    bubbleEl.className = "wd-bubble is-typing";
+    bubbleEl.textContent = "";
+    group.appendChild(bubbleEl);
+    displayedBubbles.push({ lineIdx: idx, bubbleEl: bubbleEl, groupEl: group, fullyRendered: false });
+    requestAnimationFrame(function() { feed.scrollTop = feed.scrollHeight; });
+  }
+
+  function updateTypingBubble(text, isComplete) {
+    var last = displayedBubbles[displayedBubbles.length - 1];
+    if (!last) return;
+    last.bubbleEl.textContent = text;
+    if (isComplete) {
+      last.bubbleEl.classList.remove("is-typing");
+      last.fullyRendered = true;
+    }
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function rerenderForLanguage() {
+    displayedBubbles.forEach(function(b) {
+      var line = SCRIPT_LINES[b.lineIdx];
+      var text = line.lines[currentLang] || line.lines.en;
+      if (b.fullyRendered) b.bubbleEl.textContent = text;
+      else { b.bubbleEl.textContent = ""; charIdx = 0; }
+    });
+  }
+
+  var CHAR_INTERVAL = 28;
+  var PAUSE_BETWEEN_LINES = 700;
+  var PAUSE_AFTER_FINAL = 5400;
+  var SPEAKER_LEAD_IN = 250;
+
+  function clearTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+  function scheduleNextChar() { clearTimer(); if (isPaused) return; timer = setTimeout(typeNextChar, CHAR_INTERVAL); }
+
+  function typeNextChar() {
+    if (isPaused) return;
+    if (lineIdx < 0 || lineIdx >= SCRIPT_LINES.length) {
+      lineIdx = 0;
+      charIdx = 0;
+      clearFeed();
+      clearActiveSpeaker();
+    }
+    var line = SCRIPT_LINES[lineIdx];
+    var text = line.lines[currentLang] || line.lines.en;
+    if (charIdx === 0) {
+      setActiveSpeaker(line.speaker);
+      if (!displayedBubbles.length || displayedBubbles[displayedBubbles.length - 1].lineIdx !== lineIdx) startBubble(lineIdx);
+      timer = setTimeout(function() {
+        charIdx = 1;
+        updateTypingBubble(text.slice(0, 1), false);
+        scheduleNextChar();
+      }, SPEAKER_LEAD_IN);
+      return;
+    }
+    charIdx++;
+    var isComplete = charIdx >= text.length;
+    updateTypingBubble(text.slice(0, charIdx), isComplete);
+    if (isComplete) {
+      timer = setTimeout(function() {
+        if (isPaused) return;
+        lineIdx++;
+        charIdx = 0;
+        if (lineIdx >= SCRIPT_LINES.length) {
+          clearActiveSpeaker();
+          timer = setTimeout(function() {
+            if (isPaused) return;
+            lineIdx = 0; charIdx = 0;
+            clearFeed();
+            typeNextChar();
+          }, PAUSE_AFTER_FINAL);
+        } else { typeNextChar(); }
+      }, PAUSE_BETWEEN_LINES);
+    } else { scheduleNextChar(); }
+  }
+
+
+  langSelect.addEventListener("change", function(e) {
+    var v = e.target.value;
+    if (v === "more") {
+      e.target.value = currentLang;
+      return;
+    }
+    currentLang = v;
+    rerenderForLanguage();
+    if (langHint) langHint.classList.add("hidden");
+  });
+
+  function togglePause() {
+    isPaused = !isPaused;
+    root.classList.toggle("is-paused", isPaused);
+    var iconEl = document.getElementById("wdPauseIcon");
+    if (isPaused) {
+      iconEl.innerHTML = '<path d="M3 2 L10 6 L3 10 Z" fill="currentColor"/>';
+    } else {
+      iconEl.innerHTML = '<rect x="3" y="2" width="2" height="8" fill="currentColor"/><rect x="7" y="2" width="2" height="8" fill="currentColor"/>';
+    }
+    if (!isPaused) typeNextChar();
+    else clearTimer();
+  }
+  pauseBtn.addEventListener("click", function(e) { e.stopPropagation(); togglePause(); });
+  teamsClickArea.addEventListener("click", togglePause);
+  langSelect.addEventListener("focus", function() { if (langHint) langHint.classList.add("hidden"); });
+
+  timer = setTimeout(typeNextChar, 600);
+})();
+</script>
